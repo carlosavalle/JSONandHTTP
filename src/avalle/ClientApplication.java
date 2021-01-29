@@ -1,8 +1,6 @@
 package avalle;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -13,48 +11,53 @@ public class ClientApplication {
 
 
     public static void main(String[] args) {
-        Student studentToSend = new Student();
-        studentToSend.setID(0);
-        studentToSend.setFirstName("Carlos");
-        studentToSend.setLastName("Avalle");
-
+        // handle exception if something happens, it will be catch
         try {
+            // create and set values for a new student.
+            Student studentToSend = new Student();
+            studentToSend.setID(1);
+            studentToSend.setFirstName("Carlos");
+            studentToSend.setLastName("Avalle");
+
+            // create a http server and send a student to be converted to JSON format
             HTTPServer server = new HTTPServer(studentToSend);
-        } catch (IOException e) {
-            e.printStackTrace();
+
+            // will read the JSON from the server
+            String json = readJSON("http://localhost/json");
+
+            // it will convert the JSOn to Student and display it
+            System.out.println(JSONToStudent(json));
+
+
+            // will catch any exception and will display an error if something happens.
+        } catch (IllegalArgumentException | IOException e){
+            System.out.println(e.toString());
         }
-        String json = readJSON("http://localhost/json");
-        System.out.println(JSONToStudent(json));
+
     }
 
-
-    public static Student JSONToStudent(String json){
+    // converts a JSON string into Student using jackson.
+    public static Student JSONToStudent(String json) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         Student student = null;
-        try {
-            student =  mapper.readValue(json, Student.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        student =  mapper.readValue(json, Student.class);
         return student;
     }
 
 
-
-    public static String readJSON(String url) {
+    // it will take a JSON string from a http server.
+    public static String readJSON(String url) throws IOException {
         StringBuilder data = new StringBuilder();
         String line = null;
-        try {
-            HttpURLConnection cnn = (HttpURLConnection) new URL(url).openConnection();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(cnn.getInputStream()));
+        // will connect to the server with the url provided.
+        HttpURLConnection cnn = (HttpURLConnection) new URL(url).openConnection();
 
-            while ((line = reader.readLine()) != null){
-                data.append(line);
-            }
+        // will read the information in the server.
+        BufferedReader reader = new BufferedReader(new InputStreamReader(cnn.getInputStream()));
+        while ((line = reader.readLine()) != null){
+            data.append(line);
         }
-        catch (IOException ioe) {
-            System.out.println("Error reading source: "+ioe);
-        }
+        // will return the JSON string.
         return data.toString();
     }
 
