@@ -28,7 +28,6 @@ public class ClientApplication {
             // it will convert the JSOn to Student and display it
             System.out.println(JSONToStudent(json));
 
-
             // will catch any exception and will display an error if something happens.
         } catch (IllegalArgumentException | IOException e){
             System.out.println(e.toString());
