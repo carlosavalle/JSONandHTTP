@@ -13,12 +13,18 @@ public class ClientApplication {
 
 
     public static void main(String[] args) {
+        Student studentToSend = new Student();
+        studentToSend.setID(0);
+        studentToSend.setFirstName("Carlos");
+        studentToSend.setLastName("Avalle");
 
-        HTTPServer server = new HTTPServer(80);
+        try {
+            HTTPServer server = new HTTPServer(studentToSend);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         String json = readJSON("http://localhost/json");
-        Student student = new Student();
-        student = JSONToStudent(json);
-        System.out.println(student);
+        System.out.println(JSONToStudent(json));
     }
 
 
@@ -42,14 +48,11 @@ public class ClientApplication {
             HttpURLConnection cnn = (HttpURLConnection) new URL(url).openConnection();
             BufferedReader reader = new BufferedReader(new InputStreamReader(cnn.getInputStream()));
 
-
             while ((line = reader.readLine()) != null){
-
                 data.append(line);
             }
         }
         catch (IOException ioe) {
-            
             System.out.println("Error reading source: "+ioe);
         }
         return data.toString();
